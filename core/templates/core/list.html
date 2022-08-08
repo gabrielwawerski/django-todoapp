@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+<ul class="list-group">
+    <li class="list-group-item">{{ alist.list_name }}</li>
+    <ul>
+        {% for entry in alist.entries.all %}
+        <li>{{ entry }}</li>
+        {% endfor %}
+    </ul>
+</ul>
+<br>
+<p>Author: {{ alist.user }}</p>
+{% if alist.user == user %}
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" class="btn btn-primary">
+</form>
+{% endif %}
+{% endblock %}
