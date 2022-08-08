@@ -6,7 +6,7 @@
     <li class="list-group-item">{{ alist.list_name }}</li>
     <ul>
         {% for entry in alist.entries.all %}
-        <li>{{ entry }}</li>
+        <li><input class="checkbox" id="{{ entry.pk }}"{% if alist.user != user %} disabled {% endif %} type="checkbox"{% if entry.completed %} checked{% endif %}> {{ entry }}</li>
         {% endfor %}
     </ul>
 </ul>

@@ -4,13 +4,12 @@
 
 {% block content %}
 <p>Session: You have visited this page {{ visited_count }} time{{ visited_count|pluralize }}.</p>
-<p>{{ var }}</p>
 {% for list in lists %}
 <ul class="list-group">
     <li class="list-group-item"><a href="{% url 'core:list_page' list.pk %}">{{ list.list_name }}</a> <small>{{ list.user }}</small></li>
     <ul style="list-style-type: none">
         {% for entry in list.entries.all %}
-        <li><input class="checkbox" id="{{ entry.pk }}"{% if list.user != user %} disabled {% endif %} type="checkbox"{% if entry.completed %} checked{% endif %}> {{ entry }}</li>
+        <li><input class="checkbox" id="{{ entry.pk }}"{% if list.user != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} type="checkbox"{% if entry.completed %} checked{% endif %}> {{ entry }}</li>
         {% endfor %}
     </ul>
 </ul>

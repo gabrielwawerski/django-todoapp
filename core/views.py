@@ -14,7 +14,6 @@ from .models import List, ListEntry
 
 @csrf_exempt
 def index(request):
-    var = "Hello core index"
     page_title = "Organizer"
     lists = List.objects.all()
 
@@ -22,10 +21,10 @@ def index(request):
     request.session['visited_count'] = visited_count + 1
 
     if request.method == 'POST':
-        dat = json.loads(request.body)
-        print(f"request: {dat}")
-        obj = get_object_or_404(ListEntry, pk=dat['id'])
-        obj.completed = True if dat['completed'] else False
+        req = json.loads(request.body)
+        print(f"request: {req}")
+        obj = get_object_or_404(ListEntry, pk=req['id'])
+        obj.completed = True if req['completed'] else False
         obj.save()
         response = {
             'id': obj.id,
@@ -35,7 +34,6 @@ def index(request):
         return JsonResponse(response)
 
     context = {
-        'var': var,
         'page_title': page_title,
         'lists': lists,
         'visited_count': visited_count,
