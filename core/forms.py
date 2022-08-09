@@ -28,7 +28,7 @@ class ListEntryForm(forms.Form):
 
 
 class AddContributorForm(forms.Form):
-    contributor = forms.ModelChoiceField
+    contributor = forms.ModelChoiceField(queryset=User.objects.all(), empty_label="", label="Add contributor")
 
 
 class ListForm(forms.Form):

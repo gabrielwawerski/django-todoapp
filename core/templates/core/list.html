@@ -18,7 +18,12 @@
 <form action="" method="post">
     {% csrf_token %}
     {{ entry_form }}
-    <input type="submit" value="Submit" class="btn btn-primary">
+    <input type="submit" name="add_entry" value="Submit" class="btn btn-primary">
+</form>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ add_contributor_form }}
+    <input type="submit" name="add_contributor" value="Submit" class="btn btn-primary">
 </form>
 {% endif %}
 {% endblock %}
