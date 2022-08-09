@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from core.forms import ListForm, NewUserForm, ListEntryForm
+from core.forms import ListForm, NewUserForm, ListEntryForm, AddContributorForm
 from .models import List, ListEntry
 
 
@@ -43,7 +43,8 @@ def index(request):
 def list_page(request, pk):
     alist = get_object_or_404(List, pk=pk)
 
-    if request.method == 'POST':
+    # handle adding entries
+    if request.method == 'POST' and 'add_entry' in request.POST:
         entry_form = ListEntryForm(request.POST)
 
         if entry_form.is_valid():
@@ -56,8 +57,24 @@ def list_page(request, pk):
     else:
         entry_form = ListEntryForm()
 
+    # handle adding contributors
+    if request.method == 'POST' and 'add_contributor' in request.POST:
+        add_contributor_form = AddContributorForm(request.POST)
+
+        if add_contributor_form.is_valid():
+            alist.contributors.add(add_contributor_form.cleaned_data['contributor'])
+            alist.save()
+            messages.success(request, f"{add_contributor_form.cleaned_data['contributor']} successfully added as a contributor.")
+            return redirect(reverse('core:list_page', args=(pk,)))
+    else:
+        add_contributor_form = AddContributorForm()
+        excludes = [x.username for x in alist.contributors.all()]
+        excludes.append(alist.owner.username)
+        add_contributor_form.fields['contributor'].queryset = User.objects.all().exclude(username__in=excludes)
+
     context = {
         'entry_form': entry_form,
+        'add_contributor_form': add_contributor_form,
         'alist': alist,
         'contributors': alist.contributors
     }
@@ -75,13 +92,10 @@ def add_list(request):
             alist = List()
             alist.list_name = form.cleaned_data['list_name']
             alist.owner = request.user
-            print(f"User: {alist.owner}")
 
             list_entry = ListEntry()
             list_entry.entry_text = form.cleaned_data['entry_text']
             list_entry.list = alist
-            list_entry.completed = True
-
             alist.save()
             list_entry.save()
             # sometimes form was added twice, 'del form' was here to try to fix it
@@ -105,6 +119,7 @@ def register(request):
             return redirect('core:index')
         else:
             messages.error(request, "Information you have entered is invalid.")
+    else:
+        form = NewUserForm()
 
-    form = NewUserForm()
     return render(request, template_name="core/register.html", context={"register_form": form})

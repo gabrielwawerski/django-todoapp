@@ -9,7 +9,7 @@ class List(models.Model):
     list_name = models.CharField(max_length=config.LIST_NAME_MAX_LENGTH)
     date_created = models.DateTimeField('date created', auto_now=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default="")
-    contributors = models.ManyToManyField(User, related_name='contributors')
+    contributors = models.ManyToManyField(User, related_name='contributors', blank=True)
 
     def __str__(self):
         return self.list_name
