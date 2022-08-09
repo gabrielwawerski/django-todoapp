@@ -98,9 +98,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgresql-elliptical-82157',
-        'USER': 'postgres',
-        'PASSWORD': 'admin',
-        'HOST': '127.0.0.1',
+        'USER': 'jzlgstgepduldw',
+        'PASSWORD': '319b632b6942b63559f07064eaae0d5914fd99ac084c34be6e5dc187d38f86f4',
+        'HOST': 'ec2-34-198-186-145.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }
@@ -145,6 +145,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 # STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
+#location where django collect all static files
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
+# location where you will store your static files
+STATICFILES_DIRS = [os.path.join(BASE_DIR,'project_name/static')]
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
