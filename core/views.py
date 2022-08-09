@@ -14,7 +14,6 @@ from .models import List, ListEntry
 
 @csrf_exempt
 def index(request):
-    page_title = "Organizer"
     lists = List.objects.all()
 
     visited_count = request.session.get('visited_count', 0)
@@ -34,7 +33,6 @@ def index(request):
         return JsonResponse(response)
 
     context = {
-        'page_title': page_title,
         'lists': lists,
         'visited_count': visited_count,
     }
@@ -44,7 +42,7 @@ def index(request):
 def list_page(request, pk):
     alist = get_object_or_404(List, pk=pk)
 
-    if request.method == 'POST' and alist.user:
+    if request.method == 'POST':
         form = ListEntryForm(request.POST)
 
         if form.is_valid():

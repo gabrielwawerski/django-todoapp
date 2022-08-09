@@ -6,13 +6,13 @@
     <li class="list-group-item">{{ alist.list_name }}</li>
     <ul>
         {% for entry in alist.entries.all %}
-        <li><input class="checkbox" id="{{ entry.pk }}"{% if alist.user != user %} disabled {% endif %} type="checkbox"{% if entry.completed %} checked{% endif %}> {{ entry }}</li>
+        <li><input class="checkbox" id="{{ entry.pk }}"{% if alist.user != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} type="checkbox"{% if entry.completed %} checked{% endif %}> {{ entry }}</li>
         {% endfor %}
     </ul>
 </ul>
 <br>
 <p>Author: {{ alist.user }}</p>
-{% if alist.user == user %}
+{% if alist.user == user or user.is_superuser %}
 <form action="" method="post">
     {% csrf_token %}
     {{ form }}
