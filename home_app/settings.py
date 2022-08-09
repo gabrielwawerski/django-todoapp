@@ -97,11 +97,7 @@ WSGI_APPLICATION = 'home_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgresql-elliptical-82157',
-        'USER': 'jzlgstgepduldw',
-        'PASSWORD': '319b632b6942b63559f07064eaae0d5914fd99ac084c34be6e5dc187d38f86f4',
-        'HOST': 'ec2-34-198-186-145.compute-1.amazonaws.com',
-        'PORT': '5432',
+        'NAME': 'postgres',
     }
 }
 
