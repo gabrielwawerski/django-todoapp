@@ -1,16 +1,19 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<p>Session: You have visited this page {{ visited_count }} time{{ visited_count|pluralize }}.</p>
+<small>You have visited this page {{ visited_count }} time{{ visited_count|pluralize }}.</small>
+<br>
+{% if user.is_authenticated %}
+<button type="button" class="btn btn-link"><a href="{% url 'core:add_list' %}" class="btn btn-primary">Add list</a></button>
+{% endif %}
 {% for list in lists %}
 <ul class="list-group">
-    <li class="list-group-item"><a href="{% url 'core:list_page' list.pk %}">{{ list.list_name }}</a> <small>{{ list.user }}</small></li>
+    <li class="list-group-item"><a href="{% url 'core:list_page' list.pk %}">{{ list.list_name }}</a> <small>{{ list.owner }}</small></li>
     <ul style="list-style-type: none">
         {% for entry in list.entries.all %}
-        <li><input class="checkbox" id="{{ entry.pk }}"{% if list.user != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} type="checkbox"{% if entry.completed %} checked{% endif %}> {{ entry }}</li>
+        <li><input class="checkbox" id="{{ entry.pk }}"{% if list.owner != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} type="checkbox"{% if entry.completed %} checked{% endif %}> {{ entry }}</li>
         {% endfor %}
     </ul>
 </ul>
 {% endfor %}
-<button type="button" class="btn btn-link"><a href="{% url 'core:add_list' %}" class="btn btn-primary">Add list</a></button>
 {% endblock %}

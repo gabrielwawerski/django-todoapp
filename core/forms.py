@@ -27,6 +27,10 @@ class ListEntryForm(forms.Form):
     entry_text = forms.CharField(max_length=config.ENTRY_TEXT_MAX_LENGTH, label="Add task")
 
 
+class AddContributorForm(forms.Form):
+    contributor = forms.ModelChoiceField
+
+
 class ListForm(forms.Form):
     list_name = forms.CharField(max_length=config.LIST_NAME_MAX_LENGTH)
     entry_text = forms.CharField(max_length=config.ENTRY_TEXT_MAX_LENGTH)

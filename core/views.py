@@ -3,6 +3,7 @@ import json
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -43,21 +44,22 @@ def list_page(request, pk):
     alist = get_object_or_404(List, pk=pk)
 
     if request.method == 'POST':
-        form = ListEntryForm(request.POST)
+        entry_form = ListEntryForm(request.POST)
 
-        if form.is_valid():
+        if entry_form.is_valid():
             list_entry = ListEntry()
-            list_entry.entry_text = form.cleaned_data['entry_text']
+            list_entry.entry_text = entry_form.cleaned_data['entry_text']
             list_entry.list = alist
             list_entry.save()
             messages.success(request, "Entry added successfully.")
             return redirect(reverse('core:list_page', args=(pk,)))
     else:
-        form = ListEntryForm()
+        entry_form = ListEntryForm()
 
     context = {
-        'form': form,
-        'alist': alist
+        'entry_form': entry_form,
+        'alist': alist,
+        'contributors': alist.contributors
     }
     return render(request, 'core/list.html', context)
 
@@ -72,8 +74,8 @@ def add_list(request):
         if form.is_valid():
             alist = List()
             alist.list_name = form.cleaned_data['list_name']
-            alist.user = request.user
-            print(f"User: {alist.user}")
+            alist.owner = request.user
+            print(f"User: {alist.owner}")
 
             list_entry = ListEntry()
             list_entry.entry_text = form.cleaned_data['entry_text']
@@ -82,7 +84,7 @@ def add_list(request):
 
             alist.save()
             list_entry.save()
-            del form  # sometimes form was added twice, did this fix it?
+            # sometimes form was added twice, 'del form' was here to try to fix it
             messages.success(request, "List added successfully.")
             return redirect(reverse('core:list_page', args=(alist.pk,)))
     else:
