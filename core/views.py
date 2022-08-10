@@ -20,12 +20,12 @@ def index(request):
     visited_count = request.session.get('visited_count', 0)
     request.session['visited_count'] = visited_count + 1
 
-    if request.method == 'POST':
+    if request.method == 'POST':  # todo add data to request in js - checkbox name
         req = json.loads(request.body)
         print(f"request: {req}")
-        obj = get_object_or_404(ListEntry, pk=req['id'])
-        obj.completed = True if req['completed'] else False
-        obj.save()
+        list_entry = get_object_or_404(ListEntry, pk=req['id'])
+        list_entry.completed = True if req['completed'] else False
+        list_entry.save()
         response = {
             'id': obj.id,
             'completed:': obj.completed
@@ -96,8 +96,8 @@ def add_list(request):
             list_entry = ListEntry()
             list_entry.entry_text = form.cleaned_data['entry_text']
             list_entry.list = alist
-            alist.save()
             list_entry.save()
+            alist.save()
             # sometimes form was added twice, 'del form' was here to try to fix it
             messages.success(request, "List added successfully.")
             return redirect(reverse('core:list_page', args=(alist.pk,)))
