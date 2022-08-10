@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.utils.datetime_safe import datetime
 from django.views.decorators.csrf import csrf_exempt
 
 from core.forms import ListForm, NewUserForm, ListEntryForm, AddContributorForm
@@ -27,8 +28,8 @@ def index(request):
         list_entry.completed = True if req['completed'] else False
         list_entry.save()
         response = {
-            'id': obj.id,
-            'completed:': obj.completed
+            'id': list_entry.id,
+            'completed:': list_entry.completed
         }
         print(f"response: {response}")
         return JsonResponse(response)
@@ -40,43 +41,53 @@ def index(request):
     return render(request, 'core/index.html', context)
 
 
+@csrf_exempt
 def list_page(request, pk):
     alist = get_object_or_404(List, pk=pk)
 
-    # handle adding entries
-    if request.method == 'POST' and 'add_entry' in request.POST:
-        entry_form = ListEntryForm(request.POST)
+    if request.method == 'POST':
+        if 'add_entry' in request.POST:
+            entry_form = ListEntryForm(request.POST)
+            if entry_form.is_valid():
+                list_entry = ListEntry()
+                list_entry.entry_text = entry_form.cleaned_data['entry_text']
+                list_entry.list = alist
+                list_entry.date_created = datetime.now()
+                list_entry.save()
+                messages.success(request, "Entry added successfully.")
+                return redirect(reverse('core:list_page', args=(pk,)))
 
-        if entry_form.is_valid():
-            list_entry = ListEntry()
-            list_entry.entry_text = entry_form.cleaned_data['entry_text']
-            list_entry.list = alist
-            list_entry.save()
-            messages.success(request, "Entry added successfully.")
-            return redirect(reverse('core:list_page', args=(pk,)))
-    else:
-        entry_form = ListEntryForm()
+        # handle adding contributors
+        if 'add_contributor' in request.POST:
+            add_contributor_form = AddContributorForm(request.POST)
 
-    # handle adding contributors
-    if request.method == 'POST' and 'add_contributor' in request.POST:
-        add_contributor_form = AddContributorForm(request.POST)
+            if add_contributor_form.is_valid():
+                data = add_contributor_form.cleaned_data['contributor']
+                alist.contributors.add(data)
+                alist.save()
+                messages.success(request,
+                                 f"{data} successfully added as a contributor.")
+                return redirect(reverse('core:list_page', args=(pk,)))
 
-        if add_contributor_form.is_valid():
-            alist.contributors.add(add_contributor_form.cleaned_data['contributor'])
-            alist.save()
-            messages.success(request, f"{add_contributor_form.cleaned_data['contributor']} successfully added as a contributor.")
-            return redirect(reverse('core:list_page', args=(pk,)))
-    else:
-        add_contributor_form = AddContributorForm()
-        excludes = [x.username for x in alist.contributors.all()]
-        excludes.append(alist.owner.username)
-        add_contributor_form.fields['contributor'].queryset = User.objects.all().exclude(username__in=excludes)
+        req = json.loads(request.body)
+        if req['action'] == 'edit_entry':
+            req = json.loads(request.body)
+            entry = ListEntry.objects.get(pk=req['entry_id'])
+            entry.entry_text = req['entry_text']
+            entry.save()
+            return JsonResponse({'entry_text': entry.entry_text})
+
+    entry_form = ListEntryForm()
+    add_contributor_form = AddContributorForm()
+    excludes = [x.username for x in alist.contributors.all()]
+    excludes.append(alist.owner.username)
+    add_contributor_form.fields['contributor'].queryset = User.objects.all().exclude(username__in=excludes)
 
     context = {
         'entry_form': entry_form,
         'add_contributor_form': add_contributor_form,
         'alist': alist,
-        'contributors': alist.contributors
+        'contributors': alist.contributors,
     }
     return render(request, 'core/list.html', context)
 
@@ -96,8 +107,9 @@ def add_list(request):
             list_entry = ListEntry()
             list_entry.entry_text = form.cleaned_data['entry_text']
             list_entry.list = alist
-            list_entry.save()
+            list_entry.date_created = datetime.now()
             alist.save()
+            list_entry.save()
             # sometimes form was added twice, 'del form' was here to try to fix it
             messages.success(request, "List added successfully.")
             return redirect(reverse('core:list_page', args=(alist.pk,)))
