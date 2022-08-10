@@ -22,6 +22,10 @@ class ListEntry(models.Model):
     list = models.ForeignKey(List, related_name='entries', on_delete=models.CASCADE)
     entry_text = models.CharField(max_length=config.ENTRY_TEXT_MAX_LENGTH)
     completed = models.BooleanField(default=False)
+    date_created = models.DateTimeField('date created')
 
     def __str__(self):
         return self.entry_text
+
+    class Meta:
+        ordering = ['date_created']

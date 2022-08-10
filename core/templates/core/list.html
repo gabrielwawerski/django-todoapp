@@ -2,14 +2,14 @@
 
 {% block content %}
 
-<ul class="list-group">
-    <li class="list-group-item">{{ alist.list_name }}</li>
+<h3>{{ alist.list_name }}</h3>
     <ul>
         {% for entry in alist.entries.all %}
-        <li><input class="checkbox" id="{{ entry.pk }}"{% if alist.owner != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} type="checkbox"{% if entry.completed %} checked{% endif %}> {{ entry }}</li>
+        <li><input type="checkbox" class="checkbox" id="{{ entry.pk }}" {% if alist.owner != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} {% if entry.completed %} checked{% endif %}>
+            <span class="span">{{ entry }}</span> <input class="btn" type="button" value="Edit"></li>
         {% endfor %}
     </ul>
-</ul>
+
 <br>
 <small>Author: {{ alist.owner }}</small>
 <br>
@@ -20,10 +20,13 @@
     {{ entry_form }}
     <input type="submit" name="add_entry" value="Submit" class="btn btn-primary">
 </form>
+<br>
 <form action="" method="post">
     {% csrf_token %}
     {{ add_contributor_form }}
     <input type="submit" name="add_contributor" value="Submit" class="btn btn-primary">
 </form>
 {% endif %}
+{% load static %}
+<script src="{% static 'core/list.js' %}"></script>
 {% endblock %}
