@@ -16,6 +16,9 @@ class List(models.Model):
 
     def get_absolute_url(self):
         return f'/{self.list_name}/'
+    
+    class Meta:
+        ordering = ['date_created']
 
 
 class ListEntry(models.Model):

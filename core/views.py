@@ -1,4 +1,3 @@
-import json
 
 from django.contrib import messages
 from django.contrib.auth import login
@@ -14,6 +13,8 @@ from core.forms import ListForm, NewUserForm, ListEntryForm, AddContributorForm
 from .models import List, ListEntry
 
 
+# todo: apply sorting by creation date 
+# to prevent same issues like with list entries
 @csrf_exempt
 def index(request):
     lists = List.objects.all()
@@ -76,12 +77,14 @@ def list_page(request, pk):
             entry.entry_text = req['entry_text']
             entry.save()
             return JsonResponse({'entry_text': entry.entry_text})
-
-    entry_form = ListEntryForm()
-    add_contributor_form = AddContributorForm()
-    excludes = [x.username for x in alist.contributors.all()]
-    excludes.append(alist.owner.username)
-    add_contributor_form.fields['contributor'].queryset = User.objects.all().exclude(username__in=excludes)
+    
+    # todo: check if correct
+    else:
+        entry_form = ListEntryForm()
+        add_contributor_form = AddContributorForm()
+        excludes = [x.username for x in alist.contributors.all()]
+        excludes.append(alist.owner.username)
+        add_contributor_form.fields['contributor'].queryset = User.objects.all().exclude(username__in=excludes)
 
     context = {
         'entry_form': entry_form,
