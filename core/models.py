@@ -26,6 +26,10 @@ class ListEntry(models.Model):
     entry_text = models.CharField(max_length=config.ENTRY_TEXT_MAX_LENGTH)
     completed = models.BooleanField(default=False)
     date_created = models.DateTimeField('date created')
+    # for placement inside list? so it's ordered by it
+    # method for updating positions after deleting one of entries 
+    # later on? when moving entries is implemented
+    position_in_list = models.IntegerField()
 
     def __str__(self):
         return self.entry_text
