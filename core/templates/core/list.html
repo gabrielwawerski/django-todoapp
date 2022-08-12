@@ -1,12 +1,13 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
+{% load static %}
 
 <h3>{{ alist.list_name }}</h3>
     <ul>
         {% for entry in alist.entries.all %}
-        <li><input type="checkbox" class="checkbox" id="{{ entry.pk }}" {% if alist.owner != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} {% if entry.completed %} checked{% endif %}>
-            <span class="span">{{ entry }}</span> <input class="btn" type="button" value="Edit"></li>
+        <li id="li-entry{{ entry.pk }}"><input type="checkbox" class="checkbox" id="{{ entry.pk }}" {% if alist.owner != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} {% if entry.completed %} checked{% endif %}>
+            <span class="span">{{ entry }}</span> {% if alist.owner == user or user.is_superuser %}<input class="edit btn" type="button" value="Edit"><button class="remove btn" onclick="delEntry('{{entry.pk}}')">x</button>{% endif %}</li>
         {% endfor %}
     </ul>
 

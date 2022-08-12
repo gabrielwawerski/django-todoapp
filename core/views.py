@@ -1,3 +1,4 @@
+import json
 
 from django.contrib import messages
 from django.contrib.auth import login
@@ -77,6 +78,11 @@ def list_page(request, pk):
             entry.entry_text = req['entry_text']
             entry.save()
             return JsonResponse({'entry_text': entry.entry_text})
+
+        if req['action'] == 'delete_entry':
+            entry = ListEntry.objects.get(pk=req['entry_id'])
+            entry.delete()
+            return JsonResponse({})
     
     # todo: check if correct
     else:
