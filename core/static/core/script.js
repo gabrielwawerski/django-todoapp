@@ -1,20 +1,3 @@
-// function check(id, completed) {
-//     let data = {
-//         id: id,
-//         completed: completed
-//     };
-//     $.ajax({
-//         type: 'POST',
-//         url: '',
-//         data: data,
-//         processData: false,
-//         contentType: false,
-//         success: function (json) {
-//             console.log("success! data: " + data.completed)
-//         }
-//     })
-// }
-
 const allCheckboxes = document.querySelectorAll(".checkbox");
 
 for (let i = 0; i < allCheckboxes.length; i++) {

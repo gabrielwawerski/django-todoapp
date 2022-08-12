@@ -25,7 +25,6 @@ def index(request):
 
     if request.method == 'POST':  # todo add data to request in js - checkbox name
         req = json.loads(request.body)
-        print(f"request: {req}")
         list_entry = get_object_or_404(ListEntry, pk=req['id'])
         list_entry.completed = True if req['completed'] else False
         list_entry.save()
@@ -33,7 +32,6 @@ def index(request):
             'id': list_entry.id,
             'completed:': list_entry.completed
         }
-        print(f"response: {response}")
         return JsonResponse(response)
 
     context = {
