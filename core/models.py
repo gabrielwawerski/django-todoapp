@@ -16,9 +16,6 @@ class List(models.Model):
 
     def get_absolute_url(self):
         return f'/{self.list_name}/'
-    
-    class Meta:
-        ordering = ['date_created']
 
 
 class ListEntry(models.Model):
@@ -29,7 +26,6 @@ class ListEntry(models.Model):
     # for placement inside list? so it's ordered by it
     # method for updating positions after deleting one of entries 
     # later on? when moving entries is implemented
-    position_in_list = models.IntegerField()
 
     def __str__(self):
         return self.entry_text
