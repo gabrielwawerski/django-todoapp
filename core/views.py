@@ -14,6 +14,8 @@ from core.forms import ListForm, NewUserForm, ListEntryForm, AddContributorForm
 from .models import List, ListEntry
 
 
+# todo: apply sorting by creation date 
+# to prevent same issues like with list entries
 @csrf_exempt
 def index(request):
     lists = List.objects.all()
@@ -23,7 +25,6 @@ def index(request):
 
     if request.method == 'POST':  # todo add data to request in js - checkbox name
         req = json.loads(request.body)
-        print(f"request: {req}")
         list_entry = get_object_or_404(ListEntry, pk=req['id'])
         list_entry.completed = True if req['completed'] else False
         list_entry.save()
@@ -31,7 +32,6 @@ def index(request):
             'id': list_entry.id,
             'completed:': list_entry.completed
         }
-        print(f"response: {response}")
         return JsonResponse(response)
 
     context = {
@@ -77,11 +77,18 @@ def list_page(request, pk):
             entry.save()
             return JsonResponse({'entry_text': entry.entry_text})
 
-    entry_form = ListEntryForm()
-    add_contributor_form = AddContributorForm()
-    excludes = [x.username for x in alist.contributors.all()]
-    excludes.append(alist.owner.username)
-    add_contributor_form.fields['contributor'].queryset = User.objects.all().exclude(username__in=excludes)
+        if req['action'] == 'delete_entry':
+            entry = ListEntry.objects.get(pk=req['entry_id'])
+            entry.delete()
+            return JsonResponse({})
+    
+    # todo: check if correct
+    else:
+        entry_form = ListEntryForm()
+        add_contributor_form = AddContributorForm()
+        excludes = [x.username for x in alist.contributors.all()]
+        excludes.append(alist.owner.username)
+        add_contributor_form.fields['contributor'].queryset = User.objects.all().exclude(username__in=excludes)
 
     context = {
         'entry_form': entry_form,

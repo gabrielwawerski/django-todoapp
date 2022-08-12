@@ -1,19 +1,19 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
+{% load static %}
 
 <h3>{{ alist.list_name }}</h3>
     <ul>
         {% for entry in alist.entries.all %}
-        <li><input type="checkbox" class="checkbox" id="{{ entry.pk }}" {% if alist.owner != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} {% if entry.completed %} checked{% endif %}>
-            <span class="span">{{ entry }}</span> <input class="btn" type="button" value="Edit"></li>
+        <li id="li-entry{{ entry.pk }}"><input type="checkbox" class="checkbox" id="{{ entry.pk }}" {% if alist.owner != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} {% if entry.completed %} checked{% endif %}>
+            <span class="span">{{ entry }}</span> {% if alist.owner == user or user.is_superuser %}<input class="edit btn" type="button" value="Edit"><button class="remove btn" onclick="delEntry('{{entry.pk}}')">x</button>{% endif %}</li>
         {% endfor %}
     </ul>
-
 <br>
 <small>Author: {{ alist.owner }}</small>
 <br>
-<p><small>Contributors: {% for contributor in alist.contributors.all %}{{ contributor }}, {% endfor %}</small></p>
+{% if alist.contributors.all|length != 0 %}<p><small>Contributors: {% for contributor in alist.contributors.all %}{{ contributor }}, {% endfor %}{% endif %}</small></p>
 {% if alist.owner == user or user.is_superuser %}
 <form action="" method="post">
     {% csrf_token %}
@@ -27,6 +27,5 @@
     <input type="submit" name="add_contributor" value="Submit" class="btn btn-primary">
 </form>
 {% endif %}
-{% load static %}
 <script src="{% static 'core/list.js' %}"></script>
 {% endblock %}
