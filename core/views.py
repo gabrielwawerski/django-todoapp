@@ -19,20 +19,22 @@ from .models import List, ListEntry
 @csrf_exempt
 def index(request):
     lists = List.objects.all()
-
     visited_count = request.session.get('visited_count', 0)
     request.session['visited_count'] = visited_count + 1
 
     if request.method == 'POST':  # todo add data to request in js - checkbox name
         req = json.loads(request.body)
-        list_entry = get_object_or_404(ListEntry, pk=req['id'])
-        list_entry.completed = True if req['completed'] else False
-        list_entry.save()
-        response = {
-            'id': list_entry.id,
-            'completed:': list_entry.completed
-        }
-        return JsonResponse(response)
+
+        # handle updating checkbox state
+        if req['action'] == 'update_checkbox':
+            list_entry = get_object_or_404(ListEntry, pk=req['id'])
+            list_entry.completed = True if req['completed'] else False
+            list_entry.save()
+            response = {
+                'id': list_entry.id,
+                'completed:': list_entry.completed
+            }
+            return JsonResponse(response)
 
     context = {
         'lists': lists,
@@ -71,7 +73,6 @@ def list_page(request, pk):
 
         req = json.loads(request.body)
         if req['action'] == 'edit_entry':
-            req = json.loads(request.body)
             entry = ListEntry.objects.get(pk=req['entry_id'])
             entry.entry_text = req['entry_text']
             entry.save()
@@ -81,14 +82,17 @@ def list_page(request, pk):
             entry = ListEntry.objects.get(pk=req['entry_id'])
             entry.delete()
             return JsonResponse({})
-    
-    # todo: check if correct
-    else:
-        entry_form = ListEntryForm()
-        add_contributor_form = AddContributorForm()
-        excludes = [x.username for x in alist.contributors.all()]
-        excludes.append(alist.owner.username)
-        add_contributor_form.fields['contributor'].queryset = User.objects.all().exclude(username__in=excludes)
+
+        if req['action'] == 'delete_contributor':
+            print("here!")
+            alist.contributors.remove(User.objects.get(pk=req['contributor_id']))
+            return JsonResponse({})
+
+    entry_form = ListEntryForm()
+    add_contributor_form = AddContributorForm()
+    excludes = [x.username for x in alist.contributors.all()]
+    excludes.append(alist.owner.username)
+    add_contributor_form.fields['contributor'].queryset = User.objects.all().exclude(username__in=excludes)
 
     context = {
         'entry_form': entry_form,
