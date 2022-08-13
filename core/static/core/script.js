@@ -6,6 +6,7 @@ for (let i = 0; i < allCheckboxes.length; i++) {
         const id = allCheckboxes[i].id;
 
         let data = {
+            action: 'update_checkbox',
             id: id,
             completed: completed
         };

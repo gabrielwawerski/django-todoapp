@@ -4,6 +4,9 @@ from django.db import models, ProgrammingError
 
 from core import config
 
+# todo max entries allowed
+#
+
 
 class List(models.Model):
     list_name = models.CharField(max_length=config.LIST_NAME_MAX_LENGTH)
@@ -29,7 +32,7 @@ class ListEntry(models.Model):
     # for placement inside list? so it's ordered by it
     # method for updating positions after deleting one of entries 
     # later on? when moving entries is implemented
-    position_in_list = models.IntegerField()
+    position_in_list = models.IntegerField(default=0)
 
     def __str__(self):
         return self.entry_text
