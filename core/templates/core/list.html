@@ -7,13 +7,13 @@
     <ul>
         {% for entry in alist.entries.all %}
         <li id="li-entry{{ entry.pk }}"><input type="checkbox" class="checkbox" id="{{ entry.pk }}" {% if alist.owner != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} {% if entry.completed %} checked{% endif %}>
-            <span class="span">{{ entry }}</span> {% if alist.owner == user or user.is_superuser %}<input class="edit btn" type="button" value="Edit"><button class="remove btn" onclick="delEntry('{{entry.pk}}')">x</button>{% endif %}</li>
+            <span class="span">{{ entry }}</span> {% if alist.owner == user or user.is_superuser %}<input class="edit btn" type="button" value="🖉"><button class="remove btn" onclick="delEntry('{{entry.pk}}')">🞨</button>{% endif %}</li>
         {% endfor %}
     </ul>
 <br>
 <small>Author: {{ alist.owner }}</small>
-<br>
-{% if alist.contributors.all|length != 0 %}<p><small>Contributors: {% for contributor in alist.contributors.all %}{{ contributor }}, {% endfor %}{% endif %}</small></p>
+<br>{{alist.contributors.all}}
+{% if alist.contributors.all|length != 0 %}<p><small>Contributors: {% for contributor in alist.contributors.all %}<span id="contributor{{ contributor.pk }}">{{ contributor }}</span>{% if alist.owner == user or user.is_superuser %}<button class="remove-contributor btn" id="contributor-remove-button{{ contributor.pk }}" onclick="delContributor('{{contributor.pk}}')">🞨</button>{% endif %}, {% endfor %}{% endif %}</small></p>
 {% if alist.owner == user or user.is_superuser %}
 <form action="" method="post">
     {% csrf_token %}
