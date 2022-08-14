@@ -72,6 +72,11 @@ def list_page(request, pk):
                 return redirect(reverse('core:list_page', args=(pk,)))
 
         req = json.loads(request.body)
+        if req['action'] == 'edit_list_name':
+            alist.list_name = req['list_name']
+            alist.save()
+            return JsonResponse({'list_name': alist.list_name})
+
         if req['action'] == 'edit_entry':
             entry = ListEntry.objects.get(pk=req['entry_id'])
             entry.entry_text = req['entry_text']

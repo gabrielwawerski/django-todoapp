@@ -3,7 +3,7 @@
 {% block content %}
 {% load static %}
 
-<h3>{{ alist.list_name }}</h3>
+<div style="display: inline-block;"><h3 class="h3name">{{ alist.list_name }}</h3><input type="button" value="🖉" class="list-edit btn" id="list-edit-buton{{ alist.pk }}" onclick="editList('{{alist.pk}}')"></div>
     <ul>
         {% for entry in alist.entries.all %}
         <li id="li-entry{{ entry.pk }}"><input type="checkbox" class="checkbox" id="{{ entry.pk }}" {% if alist.owner != user %}{% if not user.is_superuser %} disabled {% endif %}{% endif %} {% if entry.completed %} checked{% endif %}>
