@@ -39,6 +39,38 @@ if (editButtons.length !== 0) {
     }
 }
 
+function editList(id) {
+    let editButton = document.getElementsByClassName("list-edit");
+    let h3 = document.getElementsByClassName("h3name");
+    h3 = h3[0];
+    editButton = editButton[0];
+
+    if (editButton.getAttribute("value") === "🖉") {
+        h3.innerHTML = `<input value="${h3.textContent}" id="changed-title"/>`;
+        editButton.setAttribute("value", "Save");
+    }
+
+    else if (editButton.getAttribute("value") === "Save") {
+        const list_name = document.getElementById(`changed-title`).value;
+        const data = {
+            action: "edit_list_name",
+            list_id: id,
+            list_name: list_name,
+        };
+
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        }).then(r => {
+            return r.json()
+        }).then(data => {
+            // update entry text directly from response data.
+            h3.innerHTML = `<span>${data.list_name}</span>`;
+            editButton.setAttribute("value", "🖉");
+        });
+    }
+}
+
 // delete list's entry when button pressed
 function delEntry(id) {
     console.log("delEntry!");
