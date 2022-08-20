@@ -102,8 +102,8 @@ function delContributor(id) {
     }).then(r => {
         return r.json()
     }).then(data => {
-        console.log(`contributor${id}`);
         document.getElementById(`contributor${id}`).remove();
         document.getElementById(`contributor-remove-button${id}`).remove();
+        window.location.reload();
     });
 }
